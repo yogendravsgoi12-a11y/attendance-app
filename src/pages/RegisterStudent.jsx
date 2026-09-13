@@ -134,7 +134,7 @@ export default function RegisterStudent() {
           <input
             type="file"
             accept="image/*"
-            capture="environment"
+            
             onChange={handleFile}
             required
           />

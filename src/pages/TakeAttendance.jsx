@@ -142,7 +142,7 @@ export default function TakeAttendance() {
         </select>
       </label>
 
-      <input type="file" accept="image/*" capture="environment" onChange={handleFile} />
+      <input type="file" accept="image/*" onChange={handleFile} />
       {preview && <img ref={imgRef} src={preview} alt="classroom" width="360" />}
       {file && (
         <button onClick={handleScan} disabled={scanning || !subjectId}>
