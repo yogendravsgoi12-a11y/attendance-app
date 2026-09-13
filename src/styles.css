@@ -1,0 +1,526 @@
+/* ---------- Tokens ---------- */
+:root {
+  --ink: #16223f;       /* brand navy — sidebar, primary actions */
+  --ink-2: #1f3157;     /* lighter navy — hover states */
+  --paper: #f3f5f8;     /* page background */
+  --surface: #ffffff;   /* cards, tables, inputs */
+  --border: #dde2e9;
+  --text: #1a2333;
+  --muted: #64748b;
+  --present: #2f6844;      /* register-green: present / success */
+  --present-bg: #e7f1ea;
+  --absent: #b23a2e;       /* register-red: absent / danger */
+  --absent-bg: #fbeae8;
+  --unknown: #b45309;      /* amber: unmatched / needs review */
+  --unknown-bg: #fdf2e3;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  margin: 0;
+  color: var(--text);
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  margin: 0 0 20px;
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  margin: 28px 0 12px;
+}
+
+/* ---------- App shell: sidebar + content ---------- */
+.shell {
+  display: flex;
+  min-height: 100vh;
+  align-items: stretch;
+}
+
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--ink);
+  color: #eaf0f6;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+  padding: 0 2px;
+}
+
+.brand-logo {
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  padding: 7px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.brand-college {
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.brand-tagline {
+  font-size: 11px;
+  color: #9fb0c9;
+  margin-top: 2px;
+}
+
+.sidenav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.sidenav button {
+  text-align: left;
+  background: none;
+  border: none;
+  color: #c4ceda;
+  padding: 13px 16px;
+  border-radius: 7px;
+  font-size: 15.5px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  font-family: var(--font-body);
+}
+
+.sidenav button:hover {
+  background: var(--ink-2);
+  color: #fff;
+}
+
+.sidenav button.active {
+  background: var(--ink-2);
+  color: #fff;
+  box-shadow: inset 3px 0 0 var(--present);
+}
+
+.sidebar-user {
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  padding-top: 14px;
+  margin-top: 14px;
+  font-size: 13px;
+}
+
+.sidebar-user .email {
+  color: #fff;
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+.role-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #eaf0f6;
+  margin-bottom: 12px;
+  text-transform: capitalize;
+}
+
+.sidebar-user button {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+.sidebar-user button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.content {
+  flex: 1;
+  padding: 44px 48px;
+  max-width: 1000px;
+}
+
+/* ---------- Auth screen (pre-login) ---------- */
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper);
+  padding: 24px;
+}
+
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 380px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--ink), var(--present));
+}
+
+.auth-card h1 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  margin: 6px 0 2px;
+}
+
+.auth-brand {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.brand-logo-lg {
+  display: inline-block;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.4px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.auth-college {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.auth-tagline {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.auth-card h2 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--muted);
+  margin: 0 0 26px;
+}
+
+/* ---------- Forms ---------- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 380px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+input,
+select {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  background: var(--surface);
+  color: var(--text);
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+  border-color: var(--ink);
+}
+
+/* ---------- Buttons ---------- */
+button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  width: fit-content;
+}
+
+button:hover {
+  background: var(--ink-2);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+button.link {
+  background: none;
+  color: var(--ink);
+  text-decoration: underline;
+  padding: 0;
+  font-weight: 500;
+  width: auto;
+}
+
+button.link:hover {
+  background: none;
+  color: var(--ink-2);
+}
+
+/* ---------- Tables ---------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 4px 0 24px;
+}
+
+th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background: #f7f9fb;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---------- Status badges (present / absent / unknown) ---------- */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-present {
+  background: var(--present-bg);
+  color: var(--present);
+}
+
+.badge-absent {
+  background: var(--absent-bg);
+  color: var(--absent);
+}
+
+.badge-unknown {
+  background: var(--unknown-bg);
+  color: var(--unknown);
+}
+
+/* ---------- Misc ---------- */
+.status {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.subject-list {
+  list-style: none;
+  padding: 0;
+  max-width: 420px;
+}
+
+.subject-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.subject-list li span {
+  flex: 1;
+}
+
+.subject-list button {
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.subject-list input {
+  flex: 1;
+  padding: 5px 8px;
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0 28px;
+}
+
+.profile-header img {
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+.profile-header h2,
+.profile-header p {
+  margin: 0;
+}
+
+.profile-header p {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.summary-cards {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.summary-cards > div {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--ink);
+  border-radius: 8px;
+  padding: 16px 22px;
+  min-width: 130px;
+}
+
+.summary-cards strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.summary-cards span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.bar-track {
+  background: #e7eaf0;
+  border-radius: 6px;
+  height: 10px;
+  overflow: hidden;
+  max-width: 420px;
+}
+
+.bar-fill {
+  background: var(--present);
+  height: 100%;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.export-button {
+  background: var(--present);
+}
+
+.export-button:hover {
+  background: #24522f;
+}
+
+.warning-badge {
+  color: var(--unknown);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.inline-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.id-card-button {
+  margin-left: 12px;
+  background: var(--present);
+}
+
+.id-card-button:hover {
+  background: #24522f;
+}
