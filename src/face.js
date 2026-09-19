@@ -21,11 +21,31 @@ const DETECTOR_OPTIONS = new faceapi.TinyFaceDetectorOptions({
   scoreThreshold: 0.4,
 })
 
+// Mobile camera photos are often huge (4000x3000+), which can hang or
+// crash face detection on a phone's browser. Shrink the image onto a
+// canvas first — this is invisible to the user and makes detection
+// fast and reliable on both mobile and desktop.
+const MAX_DIMENSION = 1600
+
+function resizeForDetection(imageElement) {
+  const { naturalWidth: width, naturalHeight: height } = imageElement
+  const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height))
+
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.round(width * scale)
+  canvas.height = Math.round(height * scale)
+  canvas.getContext('2d').drawImage(imageElement, 0, 0, canvas.width, canvas.height)
+
+  return canvas
+}
+
 // For registration: expects exactly one face and returns its 128-number
 // "descriptor" (a fingerprint we can compare against later).
 export async function getSingleFaceDescriptor(imageElement) {
+  const image = resizeForDetection(imageElement)
+
   const result = await faceapi
-    .detectSingleFace(imageElement, DETECTOR_OPTIONS)
+    .detectSingleFace(image, DETECTOR_OPTIONS)
     .withFaceLandmarks()
     .withFaceDescriptor()
 
@@ -34,8 +54,10 @@ export async function getSingleFaceDescriptor(imageElement) {
 
 // For classroom photos: finds every face and returns a descriptor for each.
 export async function getAllFaceDescriptors(imageElement) {
+  const image = resizeForDetection(imageElement)
+
   const results = await faceapi
-    .detectAllFaces(imageElement, DETECTOR_OPTIONS)
+    .detectAllFaces(image, DETECTOR_OPTIONS)
     .withFaceLandmarks()
     .withFaceDescriptors()
 
