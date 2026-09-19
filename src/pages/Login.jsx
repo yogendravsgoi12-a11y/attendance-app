@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient.js'
 export default function Login() {
   const [mode, setMode] = useState('signin') // 'signin' or 'signup'
   const [fullName, setFullName] = useState('')
+  const [role, setRole] = useState('teacher')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [status, setStatus] = useState('')
@@ -18,13 +19,17 @@ export default function Login() {
         : await supabase.auth.signUp({
             email,
             password,
-            options: { data: { full_name: fullName } },
+            options: { data: { full_name: fullName, role } },
           })
 
     if (error) {
       setStatus(error.message)
     } else if (mode === 'signup') {
-      setStatus('Account created. New accounts start as "teacher" — ask an admin to upgrade you if needed. You can sign in now.')
+      setStatus(
+        role === 'student'
+          ? 'Account created. Ask your teacher or admin to link it to your student profile.'
+          : 'Account created. You can sign in now.'
+      )
     }
   }
 
@@ -40,10 +45,19 @@ export default function Login() {
 
         <form onSubmit={handleSubmit}>
           {mode === 'signup' && (
-            <label>
-              Full Name
-              <input value={fullName} onChange={(e) => setFullName(e.target.value)} required />
-            </label>
+            <>
+              <label>
+                Full Name
+                <input value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+              </label>
+              <label>
+                I am a
+                <select value={role} onChange={(e) => setRole(e.target.value)}>
+                  <option value="teacher">Teacher</option>
+                  <option value="student">Student</option>
+                </select>
+              </label>
+            </>
           )}
           <label>
             Email

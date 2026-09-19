@@ -524,3 +524,37 @@ tr:last-child td {
 .id-card-button:hover {
   background: #24522f;
 }
+
+.student-shell {
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+.student-topbar {
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+}
+
+.student-topbar button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+.student-topbar button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.student-topbar .brand {
+  margin-bottom: 0;
+}
+
+.link-account {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}

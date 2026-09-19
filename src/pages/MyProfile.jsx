@@ -15,46 +15,44 @@ async function toDataURL(url) {
   })
 }
 
-export default function StudentProfile({ studentId, onBack, isAdmin }) {
+export default function MyProfile({ userId }) {
   const [student, setStudent] = useState(null)
   const [records, setRecords] = useState([])
   const [status, setStatus] = useState('Loading...')
   const [generating, setGenerating] = useState(false)
-  const [linkEmail, setLinkEmail] = useState('')
-  const [linkStatus, setLinkStatus] = useState('')
 
-  async function handleLinkAccount(e) {
-    e.preventDefault()
-    if (!confirm(`Give the account "${linkEmail}" student access to this profile?`)) return
-
-    setLinkStatus('Looking up account...')
-
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('email', linkEmail.trim())
-      .maybeSingle()
-
-    if (profileError || !profile) {
-      setLinkStatus('No account found with that email — they need to sign up first.')
-      return
-    }
-
-    const { error: linkError } = await supabase
+  useEffect(() => {
+    supabase
       .from('students')
-      .update({ user_id: profile.id })
-      .eq('id', student.id)
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error) setStatus(error.message)
+        else if (!data) {
+          setStatus('Your account is not linked to a student profile yet. Ask your teacher or admin to link it.')
+        } else {
+          setStudent(data)
+        }
+      })
+  }, [userId])
 
-    if (linkError) {
-      setLinkStatus(`Could not link: ${linkError.message}`)
-      return
-    }
+  useEffect(() => {
+    if (!student) return
 
-    await supabase.from('profiles').update({ role: 'student' }).eq('id', profile.id)
-
-    setLinkStatus('Linked! They can now sign in and see this profile.')
-    setLinkEmail('')
-  }
+    supabase
+      .from('attendance')
+      .select('*, subjects(name)')
+      .eq('student_id', student.id)
+      .order('attendance_date', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) setStatus(error.message)
+        else {
+          setRecords(data)
+          setStatus('')
+        }
+      })
+  }, [student])
 
   async function downloadIDCard() {
     setGenerating(true)
@@ -62,17 +60,14 @@ export default function StudentProfile({ studentId, onBack, isAdmin }) {
       const photoDataUrl = await toDataURL(student.photo_url)
       const format = photoDataUrl.match(/data:image\/(\w+);/)[1].toUpperCase()
 
-      // Standard credit-card size (85.6mm x 54mm), landscape.
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] })
 
-      // Card background + border
       doc.setFillColor(255, 255, 255)
       doc.rect(0, 0, 85.6, 54, 'F')
       doc.setDrawColor(200, 206, 214)
       doc.setLineWidth(0.4)
       doc.rect(0.4, 0.4, 84.8, 53.2, 'S')
 
-      // Header band + green accent stripe (mirrors the app's brand colors)
       doc.setFillColor(22, 34, 63)
       doc.rect(0, 0, 85.6, 14, 'F')
       doc.setFillColor(47, 104, 68)
@@ -87,12 +82,10 @@ export default function StudentProfile({ studentId, onBack, isAdmin }) {
       doc.setFont(undefined, 'normal')
       doc.text('Dr. Virendra Swarup Group of Education', 4, 10.4)
 
-      // Framed photo (navy backing creates a thin border ring)
       doc.setFillColor(22, 34, 63)
       doc.rect(3, 18, 23, 23, 'F')
       doc.addImage(photoDataUrl, format, 4, 19, 21, 21)
 
-      // Name + divider
       doc.setTextColor(20, 20, 20)
       doc.setFontSize(11)
       doc.setFont(undefined, 'bold')
@@ -101,7 +94,6 @@ export default function StudentProfile({ studentId, onBack, isAdmin }) {
       doc.setLineWidth(0.3)
       doc.line(30, 24.5, 81, 24.5)
 
-      // Student ID
       doc.setFont(undefined, 'normal')
       doc.setFontSize(6.2)
       doc.setTextColor(110, 118, 132)
@@ -111,7 +103,6 @@ export default function StudentProfile({ studentId, onBack, isAdmin }) {
       doc.setTextColor(22, 34, 63)
       doc.text(student.student_id, 30, 33.3)
 
-      // Branch / Semester
       doc.setFont(undefined, 'normal')
       doc.setFontSize(6.2)
       doc.setTextColor(110, 118, 132)
@@ -128,33 +119,6 @@ export default function StudentProfile({ studentId, onBack, isAdmin }) {
     setGenerating(false)
   }
 
-  useEffect(() => {
-    if (!studentId) return
-
-    supabase
-      .from('students')
-      .select('*')
-      .eq('id', studentId)
-      .single()
-      .then(({ data, error }) => {
-        if (error) setStatus(error.message)
-        else setStudent(data)
-      })
-
-    supabase
-      .from('attendance')
-      .select('*, subjects(name)')
-      .eq('student_id', studentId)
-      .order('attendance_date', { ascending: false })
-      .then(({ data, error }) => {
-        if (error) setStatus(error.message)
-        else {
-          setRecords(data)
-          setStatus('')
-        }
-      })
-  }, [studentId])
-
   if (!student) return <p className="status">{status}</p>
 
   const total = records.length
@@ -162,7 +126,6 @@ export default function StudentProfile({ studentId, onBack, isAdmin }) {
   const absent = total - present
   const percentage = total > 0 ? Math.round((present / total) * 100) : 0
 
-  // Group records by subject name for the subject-wise table.
   const bySubject = {}
   for (const r of records) {
     const name = r.subjects?.name || 'Unknown'
@@ -173,9 +136,6 @@ export default function StudentProfile({ studentId, onBack, isAdmin }) {
 
   return (
     <div>
-      <button className="link" onClick={onBack}>
-        ← Back to Students
-      </button>
       <button onClick={downloadIDCard} disabled={generating} className="id-card-button">
         {generating ? 'Generating...' : 'Download ID Card'}
       </button>
@@ -259,26 +219,6 @@ export default function StudentProfile({ studentId, onBack, isAdmin }) {
             ))}
           </tbody>
         </table>
-      )}
-
-      {isAdmin && (
-        <div className="link-account">
-          <h3>Link a Login Account</h3>
-          <form onSubmit={handleLinkAccount}>
-            <label>
-              Student's account email
-              <input
-                type="email"
-                value={linkEmail}
-                onChange={(e) => setLinkEmail(e.target.value)}
-                placeholder="student@example.com"
-                required
-              />
-            </label>
-            <button type="submit">Link Account</button>
-          </form>
-          {linkStatus && <p className="status">{linkStatus}</p>}
-        </div>
       )}
     </div>
   )

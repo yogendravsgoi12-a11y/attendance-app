@@ -8,6 +8,7 @@ import StudentsList from './pages/StudentsList.jsx'
 import Subjects from './pages/Subjects.jsx'
 import AttendanceHistory from './pages/AttendanceHistory.jsx'
 import StudentProfile from './pages/StudentProfile.jsx'
+import MyProfile from './pages/MyProfile.jsx'
 
 const TABS = {
   dashboard: { label: 'Dashboard', Page: Dashboard },
@@ -59,6 +60,28 @@ export default function App() {
     )
   if (!session) return <Login />
 
+  // Students get a simple, restricted view — just their own profile,
+  // not the full staff sidebar with registration/reports/etc.
+  if (profile?.role === 'student') {
+    return (
+      <div className="student-shell">
+        <div className="student-topbar">
+          <div className="brand">
+            <div className="brand-logo">VSGOI</div>
+            <div>
+              <div className="brand-college">Dr. Virendra Swarup Group of Education</div>
+              <div className="brand-tagline">Attendance System</div>
+            </div>
+          </div>
+          <button onClick={() => supabase.auth.signOut()}>Logout</button>
+        </div>
+        <main className="content">
+          <MyProfile userId={session.user.id} />
+        </main>
+      </div>
+    )
+  }
+
   const { Page } = TABS[tab]
 
   return (
@@ -96,7 +119,11 @@ export default function App() {
 
       <main className="content">
         {viewingStudentId ? (
-          <StudentProfile studentId={viewingStudentId} onBack={() => setViewingStudentId(null)} />
+          <StudentProfile
+            studentId={viewingStudentId}
+            onBack={() => setViewingStudentId(null)}
+            isAdmin={profile?.role === 'admin'}
+          />
         ) : (
           <Page isAdmin={profile?.role === 'admin'} onSelectStudent={setViewingStudentId} />
         )}
